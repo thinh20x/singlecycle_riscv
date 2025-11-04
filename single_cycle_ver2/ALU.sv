@@ -7,11 +7,10 @@
 //                             
 // Author                    : nhat.leminh0254@gmail.com
 //
-// Created On                : Tue Jul 07 22:34:00 2025
+// Created On                : 
 // History (Date, Changed By):
-//            Jul 01 2025, ngmquan & nhatle, create module.
-//            Jul 07 2025, nhatle, fix col_buf.
-//            Aug 12 2025, nhatle, modify array index range.
+//
+//
 ////////////////////////////////////////////////////////////////
 module ALU
 (
