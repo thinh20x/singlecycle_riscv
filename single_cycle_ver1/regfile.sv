@@ -12,13 +12,11 @@ module regfile (
 );
 
     // Register array: 32 registers of 32 bits each
-    logic [31:0] regfile [31:0];
+logic [31:0] regfile [31:0];
 	 
-	 always_ff @(posedge i_clk or negedge i_reset) begin
-	          
-				 if(!i_reset) begin 
-					                  
-	         regfile[0]  <= 32'h0;
+always_ff @(posedge i_clk or negedge i_reset) begin
+	    if(!i_reset) begin 		                  
+	        regfile[0]  <= 32'h0;
             regfile[1]  <= 32'h0;
             regfile[2]  <= 32'h0;
             regfile[3]  <= 32'h0;
@@ -50,22 +48,13 @@ module regfile (
             regfile[29] <= 32'h0;
             regfile[30] <= 32'h0;
             regfile[31] <= 32'h0;
-			
-				 
-				 
-				            end  
-				
-				else if(i_rd_wren && i_rd_addr != 5'h0  ) begin
-				
-				         regfile[i_rd_addr] <=  i_rd_data ;
-				
-				end
-	 
-	 
-		end 
-		// Read port 1: read data from regfile[i_rs1_addr]
-    assign o_rs1_data = (i_rs1_addr == 5'd0) ? 32'h0 : regfile[i_rs1_addr];
+		end else if ( i_rd_wren && i_rd_addr != 5'h0 ) begin
+			regfile[i_rd_addr] <=  i_rd_data ;
+		end
+end 
+// Read port 1: read data from regfile[i_rs1_addr]
+assign o_rs1_data = (i_rs1_addr == 5'd0) ? 32'h0 : regfile[i_rs1_addr];
 
-    // Read port 2: read data from regfile[i_rs2_addr]
-    assign o_rs2_data = (i_rs2_addr == 5'd0) ? 32'h0 : regfile[i_rs2_addr];
-	 endmodule 
+	// Read port 2: read data from regfile[i_rs2_addr]
+assign o_rs2_data = (i_rs2_addr == 5'd0) ? 32'h0 : regfile[i_rs2_addr];
+endmodule 
