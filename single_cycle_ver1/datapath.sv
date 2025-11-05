@@ -1,18 +1,28 @@
 module datapath (
     input wire i_clk,
     input wire i_reset,
+    
     input wire i_pc_sel,
+    
     output wire[31:0] o_instr,
+    
     input wire [2:0] i_imm_sel,
+    
     input wire i_rd_wren,
+    
     input wire i_insn_vld,
+    
     input wire i_br_un,
     output wire o_br_less,
     output wire o_br_equal,
+    
     input wire i_opa_sel,
     input wire i_opb_sel,
+    
     input wire[3:0] i_alu_op,
+    
     input wire i_mem_wren,
+    
     input wire[1:0] i_wb_sel,
     input wire [1:0] i_lsu_op, // 0x: word handle, 10: Half word, 11: byte
     input wire i_ld_un, // 0: for signed, 1: for unsigned
@@ -32,16 +42,21 @@ module datapath (
     output wire [31:0] o_io_lcd,  // Output for LCD register
     input wire [31:0] i_io_sw    // Input for switches
 );
-    // program counter block
+    // program counter block--------------------------------------
     reg[31:0] pc;
     initial begin
         pc = 0;
     end
     wire[31:0] pc_next, pc_four, alu_data;
     wire[31:0] instr;
+    
+    //==============mux before pc 
     assign pc_next = (i_pc_sel) ? alu_data : pc_four; // pc_sel = 1 -> alu_data
+    
+    //--------------------------------------+4 block 
     assign pc_four = pc + 4;
-    // imem IM(
+    
+    // imem IM(------------------------------------------------------------
     //     .i_clk(i_clk),
     //     .i_reset(i_reset),
     //     .i_pc(pc),
@@ -49,7 +64,7 @@ module datapath (
     // );
     assign o_instr = instr;
 
-    // regfile block
+    // regfile block--------------------------------------------------------------------------
     wire[31:0] rs1_data, rs2_data, wb_data;
     regfile RF(
         .i_clk(i_clk),
@@ -62,32 +77,60 @@ module datapath (
         .i_rd_data(wb_data),
         .i_rd_wren(i_rd_wren)
     );
-    // immediate block
+    // immediate block-----------------------------------------------------------
     wire[31:0] imm;
-    immgen IG(
+    imm_gen IG(//-------------------------4/11/2025:immgen to imm_gen
         .i_instr(instr[31:7]),
-        .i_imm_sel(i_imm_sel), // bit 1: 0 for S type, 1 for B type, // bit 0: 0 for I-J type 1 for S type
+        .i_imm_sel(i_imm_sel), // 
         .o_imm(imm)
     );
-    // BRC block
+    //i_imm_sel=0
+    //unique case (i_imm_sel)
+    //          3'd0:  I type
+	//			
+	//			3'd1  I*
+				
+    //          3'd2   S 
+				
+	//			3'd3  /B 
+				
+	//			3'd4  u 
+				
+	//			3'd5  J 
+				
+				
+    
+    // BRC block---------------------------------------------------------------------
+    
+    
+    
+    
     brc BR(
         .i_rs1_data(rs1_data),
         .i_rs2_data(rs2_data),
-        .i_br_un(i_br_un),
+        .i_br_un(i_br_un),// 1 unsigned  /0 signed
         .o_br_less(o_br_less),
         .o_br_equal(o_br_equal)
     );
-    // ALU block
+    
+    //-------------------mux opa----------------------------------------------------------
+    
     wire[31:0] operand_a, operand_b;
+    
     assign operand_a = (i_opa_sel) ? pc : rs1_data;
-    assign operand_b = (i_opb_sel) ? imm : rs2_data;
+    
+    //----------------mux opb-------------------------------------------
+    assign operand_b = (i_opb_sel) ? rs2_data : imm  ;
+    
+   // ALU block-------------------------------------------------------- 
     alu AL(
         .i_op_a(operand_a),
         .i_op_b(operand_b),
         .i_alu_op(i_alu_op),
         .o_alu_data(alu_data)
     );
-    // LSU block
+    
+    // LSU block-------------------------------------------------------
     wire[31:0] ld_data;
     lsu LS(
         .i_clk(i_clk),
@@ -111,6 +154,7 @@ module datapath (
         .i_lsu_op(i_lsu_op), // 0x: word handle, 10: Half word, 11: byte
         .i_ld_un(i_ld_un), // 0: for signed, 1: for unsigned
 
+//===========================imem=======================
         .i_pc(pc),
         .o_instr(instr)
     );

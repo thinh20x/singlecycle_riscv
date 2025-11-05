@@ -1,5 +1,5 @@
 module control_unit(
-    input logic [31:0] inst,
+    input logic [31:0] i_instr,
     input logic br_less, br_eqal, o_ACK, in_sram,
     output logic pc_sel, rd_wren, insn_vld, br_un, opa_sel, opb_sel, mem_wren,mem_read ,
     output logic [3:0] alu_op,
@@ -13,8 +13,8 @@ module control_unit(
     logic [2:0] func_3 ;
     logic [6:0] func_7 ;
 
-	 assign func_3 = inst[14:12];
-	 assign func_7 = inst[31:25];
+	 assign func_3 = i_instr[14:12];
+	 assign func_7 = i_instr[31:25];
     always_comb begin
         imm_sel_temp = 4'd8;
 		  en_pc = 1;
@@ -30,7 +30,7 @@ module control_unit(
         wb_sel = 2'd0;
         imm_sel = 3'd0;
         num_byte = 3'd0;
-        unique case(inst[6:0])
+        unique case(i_instr[6:0])
             7'b0010011 : imm_sel_temp = 4'd0; // I1-type
             7'b0100011 : imm_sel_temp = 4'd1; // S-type
             7'b1100011 : imm_sel_temp = 4'd2; // B-type
@@ -202,7 +202,7 @@ module control_unit(
             opa_sel = 1;
 				opb_sel = 0;
 				
-            case(inst[6:0])
+            case(i_instr[6:0])
                 7'b0010111 : alu_op = 4'd0; // auipc
                 7'b0110111 : alu_op = 4'd10; // lui+++++++++++++++++++++
             endcase

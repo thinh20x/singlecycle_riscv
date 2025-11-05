@@ -16,6 +16,7 @@ module alu (
     localparam ALU_SLL  = 4'h7;
     localparam ALU_SRL  = 4'h8;
     localparam ALU_SRA  = 4'h9;
+    localparam ALU_LUI  = 4'hA;//// o_alu_data =  i_op_b =output off immgen block---------------------------------------------
 
     // ===== Logic operations =====
     logic [31:0] res_xor, res_or, res_and;
@@ -165,6 +166,7 @@ module alu (
             ALU_SLL:  o_alu_data = res_sll;
             ALU_SRL:  o_alu_data = res_srl;
             ALU_SRA:  o_alu_data = res_sra;
+            ALU_LUI:  o_alu_data = i_op_b;// with i_op_b =output off immgen ---------------------------------------------
             default:  o_alu_data = 32'b0;
         endcase
     end

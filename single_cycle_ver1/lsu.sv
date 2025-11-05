@@ -29,7 +29,7 @@ module lsu (
     output wire [31:0] o_io_lcd,  // Output for LCD register
     input wire [31:0] i_io_sw,    // Input for switches
     input wire [1:0] i_lsu_op, // 0x: word handle, 10: Half word, 11: byte
-    input wire i_ld_un, // 0: for signed, 1: for unsigned
+    input wire i_ld_un, // 0: for signed, 1: for unsigned extend half word  numver
 
     input wire[31:0] i_pc,
     output reg[31:0] o_instr

@@ -31,10 +31,10 @@ module singlecycle (
     wire[1:0] wb_sel;
     wire[1:0] lsu_op;
     wire ld_un;
-
+//--------------------------------------
     control_unit CU(
-        .i_clk(i_clk),
-        .i_reset(i_reset),
+        //.i_clk(i_clk),//ok
+        //.i_reset(i_reset),
         .o_pc_sel(pc_sel),
         .i_instr(instr),
         .o_imm_sel(imm_sel),
@@ -49,9 +49,24 @@ module singlecycle (
         .o_mem_wren(mem_wren),
         .o_wb_sel(wb_sel),
         .o_lsu_op(lsu_op), // 0x: word handle, 10: Half word, 11: byte
-        .o_ld_un(ld_un) // 0: for signed, 1: for unsigned
+        .o_ld_un(ld_un) // 0: for signed, 1: for unsigned extend half word  numver
     );
 
+module control_unit(
+    input logic [31:0] i_instr,
+    input logic i_br_less, i_br_equal, o_ACK, in_sram,
+    output logic o_pc_sel, o_rd_wren, o_insn_vld, o_br_un, o_opa_sel, o_opb_sel, o_mem_wren,mem_read ,
+    output logic [3:0] o_alu_op,
+    output logic [1:0] o_wb_sel,
+	 output logic en_pc,
+    output logic [2:0] o_imm_sel,//5/11/2025 imm_sel to o_imm_sel 
+	 output logic [2:0] num_byte
+);
+
+
+
+
+  //----------------------------------------------------
     datapath DP(
         .i_clk(i_clk),
         .i_reset(i_reset),
@@ -87,4 +102,4 @@ module singlecycle (
         .i_io_sw(i_io_sw)   // Input for switches
     );
 
-endmodule
+endmodule 
