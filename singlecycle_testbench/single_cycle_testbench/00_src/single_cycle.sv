@@ -1,4 +1,4 @@
-module singlecycle (
+module single_cycle (
     input wire i_clk,
     input wire i_reset,
     output reg [31:0] o_pc_debug,
