@@ -1,0 +1,16 @@
+//
+// File created by:  xrun
+// Do not modify this file
+//
+/home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/01_bench/driver.sv
+/home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/01_bench/scoreboard.sv
+/home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/01_bench/tbench.sv
+/home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/01_bench/tlib.svh
+/home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/00_src/brc.sv
+/home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/00_src/alu.sv
+/home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/00_src/control_unit.sv
+/home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/00_src/datapath.sv
+/home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/00_src/imm_gen.sv
+/home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/00_src/lsu.sv
+/home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/00_src/regfile.sv
+/home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/00_src/single_cycle.sv

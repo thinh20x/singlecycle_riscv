@@ -1,0 +1,156 @@
+xrun(64): 24.09-s005: (c) Copyright 1995-2025 Cadence Design Systems, Inc.
+TOOL:	xrun(64)	24.09-s005: Started on Nov 06, 2025 at 11:06:14 +07
+xrun
+	-access +rwc
+	-f ./flist
+		-sv
+		-timescale 1ns/100ps
+		./../01_bench/driver.sv
+		./../01_bench/scoreboard.sv
+		./../01_bench/tbench.sv
+		./../01_bench/tlib.svh
+		./../00_src/brc.sv
+		./../00_src/alu.sv
+		./../00_src/control_unit.sv
+		./../00_src/datapath.sv
+		./../00_src/imm_gen.sv
+		./../00_src/lsu.sv
+		./../00_src/regfile.sv
+		./../00_src/single_cycle.sv
+file: ./../01_bench/driver.sv
+	module worklib.driver:sv
+		errors: 0, warnings: 0
+file: ./../01_bench/scoreboard.sv
+	module worklib.scoreboard:sv
+		errors: 0, warnings: 0
+file: ./../01_bench/tbench.sv
+	module worklib.tbench:sv
+		errors: 0, warnings: 0
+file: ./../01_bench/tlib.svh
+file: ./../00_src/brc.sv
+	module worklib.brc:sv
+		errors: 0, warnings: 0
+file: ./../00_src/alu.sv
+	module worklib.alu:sv
+		errors: 0, warnings: 0
+file: ./../00_src/control_unit.sv
+	module worklib.control_unit:sv
+		errors: 0, warnings: 0
+file: ./../00_src/datapath.sv
+	module worklib.datapath:sv
+		errors: 0, warnings: 0
+file: ./../00_src/imm_gen.sv
+	module worklib.imm_gen:sv
+		errors: 0, warnings: 0
+file: ./../00_src/lsu.sv
+	module worklib.lsu:sv
+		errors: 0, warnings: 0
+file: ./../00_src/regfile.sv
+	module worklib.regfile:sv
+		errors: 0, warnings: 0
+file: ./../00_src/single_cycle.sv
+	module worklib.single_cycle:sv
+		errors: 0, warnings: 0
+		Caching library 'worklib' ....... Done
+	Elaborating the design hierarchy:
+	Top level design units:
+		$unit_0x46949551
+		tbench
+	Building instance overlay tables: ...
+        $readmemh(`MEMFILE, d_mem);
+                                |
+xmelab: *W,MEMODR (../00_src/lsu.sv,85|32): $readmem default memory order incompatible with IEEE1364.
+................. Done
+	Generating native compiled code:
+		worklib.driver:sv <0x6ece5257>
+			streams:   1, words:   210
+		worklib.scoreboard:sv <0x7edadaf2>
+			streams:   2, words:  1482
+		worklib.brc:sv <0x3ad60e3c>
+			streams:   2, words:  1453
+		worklib.imm_gen:sv <0x19d0b461>
+			streams:   1, words:  1112
+		worklib.regfile:sv <0x5ab6759a>
+			streams:  36, words: 15222
+		worklib.datapath:sv <0x2272ed06>
+			streams:  12, words:  3594
+		worklib.control_unit:sv <0x2e8035ca>
+			streams:   2, words: 20153
+		worklib.single_cycle:sv <0x30bd9a30>
+			streams:  13, words:  5315
+		worklib.tbench:sv <0x61fbe141>
+			streams:  34, words:  8798
+		worklib.alu:sv <0x4bf2f7a3>
+			streams:  17, words: 16731
+		worklib.lsu:sv <0x13afafea>
+			streams:  77, words: 41941
+		worklib.\$unit_0x46949551 :compilation_unit <0x7de2f71d>
+			streams:   3, words:  6130
+	Building instance specific data structures.
+	Loading native compiled code:     .................... Done
+	Design hierarchy summary:
+		                 Instances  Unique
+		Modules:                11      11
+		Registers:             108     108
+		Scalar wires:          183       -
+		Vectored wires:         91       -
+		Always blocks:          21      21
+		Initial blocks:         25      10
+		Cont. assignments:     184      33
+		Pseudo assignments:     45       -
+		Compilation units:       1       1
+		Process Clocks:          6       5
+		Simulation timescale:  1ps
+	Writing initial simulation snapshot: worklib.tbench:sv
+Loading snapshot worklib.tbench:sv .................... Done
+xcelium> source /home/yellow/ctmt_l01_l02_7/tools/eda/cadence/XCELIUM2409/tools/xcelium/files/xmsimrc
+xcelium> run
+
+SINGLE CYCLE - ISA test
+
+add......PASS
+addi.....PASS
+sub......PASS
+and......PASS
+andi.....PASS
+or.......PASS
+ori......PASS
+xor......PASS
+xori.....PASS
+slt......PASS
+slti.....PASS
+sltu.....PASS
+sltiu....PASS
+sll......PASS
+slli.....PASS
+srl......PASS
+srli.....PASS
+sra......PASS
+srai.....PASS
+lw.......PASS
+lh.......PASS
+lhu......PASS
+lb.......PASS
+lbu......PASS
+sw.......PASS
+sh.......PASS
+sb.......PASS
+auipc....PASS
+lui......PASS
+beq......PASS
+bne......PASS
+blt......PASS
+bltu.....PASS
+bge......PASS
+bgeu.....PASS
+jal......PASS
+jalr.....PASS
+malgn....ERROR
+iosw.....PASS
+
+END of ISA test
+
+Simulation complete via $finish(1) at time 19422 NS + 1
+../01_bench/scoreboard.sv:33       $finish;
+xcelium> exit
+TOOL:	xrun(64)	24.09-s005: Exiting on Nov 06, 2025 at 11:06:21 +07  (total: 00:00:07)

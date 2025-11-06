@@ -1,0 +1,12 @@
+1762342569 /home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/01_bench/driver.sv
+1762342569 /home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/01_bench/scoreboard.sv
+1762342569 /home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/01_bench/tbench.sv
+1762342569 /home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/01_bench/tlib.svh
+1762342568 /home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/00_src/brc.sv
+1762342568 /home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/00_src/alu.sv
+1762342568 /home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/00_src/control_unit.sv
+1762401959 /home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/00_src/datapath.sv
+1762342568 /home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/00_src/imm_gen.sv
+1762342844 /home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/00_src/lsu.sv
+1762342568 /home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/00_src/regfile.sv
+1762401063 /home/yellow/ctmt_l01_l02_7/milestone2/single_cycle_testbench/00_src/single_cycle.sv

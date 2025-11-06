@@ -80,7 +80,7 @@ module datapath (
     // immediate block-----------------------------------------------------------
     wire[31:0] imm;
     imm_gen IG(//-------------------------4/11/2025:immgen to imm_gen
-        .i_instr(instr[31:7]),
+        .i_instr(instr),// 6/11/2025 instr[31:7] to instr 
         .i_imm_sel(i_imm_sel), // 
         .o_imm(imm)
     );
@@ -163,8 +163,8 @@ module datapath (
     assign o_pc_debug = pc;
     assign o_insn_vld = i_insn_vld;
     //
-    always @(posedge i_clk or posedge i_reset) begin
-        if (i_reset) begin
+    always @(posedge i_clk or negedge i_reset) begin
+        if (!i_reset) begin //-------------------------6/11/2025 i_reset to !i_reset
             pc <= 32'd0;
         end
         else begin

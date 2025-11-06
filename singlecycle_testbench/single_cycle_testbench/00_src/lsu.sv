@@ -5,7 +5,7 @@
 /* verilator lint_off SYNCASYNCNET */
 /* verilator lint_off MULTIDRIVEN */
 
-`define MEMFILE "../02_test/isa.mem"
+`define MEMFILE "../02_test/isa_4b.hex"
 `define MEMSIZE 65536
 `define ADDRBIT 16
 
