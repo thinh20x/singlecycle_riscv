@@ -1,0 +1,119 @@
+// wrapper.sv
+// Wrapper cho module single_cycle, map chân trên kit DE2
+// - CLOCK_50 -> i_clk
+// - i_reset tied to 1'b1
+// - SW[15:0] -> i_io_sw[15:0], i_io_sw[31:16]=0
+// - o_insn_vld -> LEDG[0]
+// - Display SW value on LEDR
+// - HEX0..HEX7 map to o_io_hex0..o_io_hex7
+module wrapper (
+    input  wire        CLOCK_50,      // 50 MHz clock from board
+    input  wire [15:0] SW,            // switches on board
+    output wire [17:0] LEDR,          // red leds on many DE2 boards (adjust width if needed)
+    output wire [8:0]  LEDG,          // green leds (adjust width if needed)
+    output wire [6:0]  HEX0,
+    output wire [6:0]  HEX1,
+    output wire [6:0]  HEX2,
+    output wire [6:0]  HEX3,
+    output wire [6:0]  HEX4,
+    output wire [6:0]  HEX5,
+    output wire [6:0]  HEX6,
+    output wire [6:0]  HEX7
+);
+
+    // -------------------------
+    // Internal signals to connect to single_cycle
+    // -------------------------
+    wire        i_clk;
+    wire        i_reset;
+    wire [31:0] i_io_sw;       // assembled switch vector (hi 16 bits = 0)
+    wire [31:0] o_io_ledr;     // from cpu (unused for board mapping per request)
+    wire [31:0] o_pc_debug;
+    wire        o_insn_vld;
+    wire [6:0]  o_hex0, o_hex1, o_hex2, o_hex3, o_hex4, o_hex5, o_hex6, o_hex7;
+    // other control/datapath signals (not exposed on wrapper)
+    wire pc_sel;
+    wire [31:0] instr;
+    wire [2:0] imm_sel;
+    wire rd_wren;
+    wire br_un;
+    wire br_less;
+    wire br_equal;
+    wire opa_sel;
+    wire opb_sel;
+    wire [3:0] alu_op;
+    wire mem_wren;
+    wire [1:0] wb_sel;
+    wire [1:0] lsu_op;
+    wire ld_un;
+
+    // clock / reset mapping
+    assign i_clk   = CLOCK_50;
+    // Per your request: tie reset to logic 1 so CPU "runs".
+    // NOTE: If your single_cycle expects active-low reset, you must change this.
+    assign i_reset = 1'b1;
+
+    // Build 32-bit switch vector: upper 16 bits = 0, lower 16 bits = SW
+    assign i_io_sw = {16'b0, SW};
+
+    // Instantiate single_cycle
+    single_cycle u_single_cycle (
+        .i_clk(i_clk),
+        .i_reset(i_reset),
+        .o_pc_debug(o_pc_debug),
+        .o_insn_vld(o_insn_vld),
+        .o_io_ledr(o_io_ledr),
+        .o_io_ledg(),        // we will drive LEDG[0] from o_insn_vld per request
+        .o_io_hex0(o_hex0),
+        .o_io_hex1(o_hex1),
+        .o_io_hex2(o_hex2),
+        .o_io_hex3(o_hex3),
+        .o_io_hex4(o_hex4),
+        .o_io_hex5(o_hex5),
+        .o_io_hex6(o_hex6),
+        .o_io_hex7(o_hex7),
+        .o_io_lcd(),         // not used here
+        .i_io_sw(i_io_sw)
+        // Note: other ports of single_cycle are internally connected in your top module.
+    );
+
+    // -------------------------
+    // Board output mapping
+    // -------------------------
+
+    // Map o_insn_vld to LEDG[0], keep other LEDG bits 0
+    // Note: LEDG width on your board may differ. Here we assume at least [0].
+    assign LEDG = { ( (8 > 0) ? {(8){1'b0}} : 1'b0 }, o_insn_vld }; 
+    // Explanation: previous line builds LEDG[8:1]=0, LEDG[0]=o_insn_vld.
+    // If your LEDG bus width is different, substitute manually:
+    // Example for LEDG[8:0]: assign LEDG = {8'b0, o_insn_vld};
+
+    // Show switch value on LEDR: use i_io_sw (32-bit) but board LEDR usually less wide.
+    // We'll map lower LEDR bits to lower bits of i_io_sw.
+    // If your board has 18 red leds (LEDR[17:0]) use this:
+    assign LEDR = i_io_sw[17:0]; // show SW[15:0] on LEDR[15:0], LEDR[17:16]=0
+    // If your board has fewer/more leds, adjust slice above.
+
+    // Map HEX outputs from CPU to board HEX displays.
+    // single_cycle produces 7-bit segments already (a..g), so connect directly.
+    assign HEX0 = o_hex0;
+    assign HEX1 = o_hex1;
+    assign HEX2 = o_hex2;
+    assign HEX3 = o_hex3;
+    assign HEX4 = o_hex4;
+    assign HEX5 = o_hex5;
+    assign HEX6 = o_hex6;
+    assign HEX7 = o_hex7;
+
+    // -------------------------
+    // Notes / reminders
+    // -------------------------
+    // 1) i_reset tied to 1'b1 means no reset — if your CPU requires active-low reset from KEY,
+    //    you should tie i_reset = ~KEY[0] or similar. Confirm reset polarity in single_cycle/datapath.
+    // 2) If your board's LEDR/LEDG widths differ, adjust the port widths at module top & assignments.
+    // 3) Quartus pin assignments (PIN location to CLOCK_50, SW[], LEDR[], LEDG[], HEX[]) must be
+    //    done in the .qsf (Assignment Editor) according to your DE2 card pinout.
+    // 4) single_cycle.o_io_ledr is left unconnected to board LEDs; per your request we display i_io_sw.
+    //    If you want the CPU-driven LEDR instead, change `assign LEDR = o_io_ledr[17:0];` 
+    //    (and ensure widths match).
+endmodule
