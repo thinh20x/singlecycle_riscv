@@ -1,104 +1,50 @@
 `default_nettype none
 
-module singlecycle_wrapper
-//import mypkg::*;
-(
-  input  logic [17:0]      SW      ,
-
-  output logic [17:0]      LEDR    ,
-  output logic [7:0]       LEDG    ,
-
-  output logic [6:0]       HEX0    ,
-  output logic [6:0]       HEX1    ,
-  output logic [6:0]       HEX2    ,
-  output logic [6:0]       HEX3    ,
-  output logic [6:0]       HEX4    ,
-  output logic [6:0]       HEX5    ,
-  output logic [6:0]       HEX6    ,
-  output logic [6:0]       HEX7    ,
-
-  //output logic [7:0]       LCD_DATA,
-  //output logic             LCD_RW  ,
-  //output logic             LCD_RS  ,
-  //output logic             LCD_EN  ,
-  //output logic             LCD_ON  ,
-
-  input  logic             CLOCK_50//,
-  
-    // output logic [17:0]   SRAM_ADDR,
-	  //inout  wire [15:0]    SRAM_DQ  ,
-	//  output logic          SRAM_CE_N,
-	//  output logic          SRAM_WE_N,
-	//  output logic          SRAM_LB_N,
-	//  output logic          SRAM_UB_N,
-	//  output  logic         SRAM_OE_N
+module singlecycle_wrapper (
+  input  logic [17:0] SW,
+  output logic [17:0] LEDR,
+  output logic [7:0]  LEDG,
+  output logic [6:0]  HEX0, HEX1, HEX2, HEX3,
+  output logic [6:0]  HEX4, HEX5, HEX6, HEX7,
+  input  logic        CLOCK_50
 );
 
-  //assign LEDR[17:0] = SW[17:0];
+  // Khai báo tất cả signals cần thiết
+  logic [31:0] io_lcd, io_ledg_full, io_ledr_full;
+  logic [31:0] pc_debug;
+  logic [6:0] hex0_data, hex1_data, hex2_data, hex3_data;
+  logic [6:0] hex4_data, hex5_data, hex6_data, hex7_data;
 
-  //logic [31:0]       io_sw  ;
-  //logic [31:0]       io_lcd ;
-  //logic [31:0]       io_ledg;
-  logic [31:0]       io_ledr;
-  //logic [31:0]       io_hex0;
-  //logic [31:0]       io_hex1;
- // logic [31:0]       io_hex2;
- // logic [31:0]       io_hex3;
- // logic [31:0]       io_hex4;
- // logic [31:0]       io_hex5;
- // logic [31:0]       io_hex6;
- // logic [31:0]       io_hex7;
-
- // logic [31:0]       pc_debug;
-
-  //assign LEDG[8] = |io_lcd[28:10] || |io_hex0[31:7] || |io_hex1[31:7] || |io_hex2[31:7]
-   //                        || |io_hex3[31:7] || |io_hex4[31:7] || |io_hex5[31:7]
-   //                        || |io_hex6[31:7] || |io_hex7[31:7] ||  io_ledg[31:8] | io_ledr[31:17];
-
- // assign HEX0       = io_hex0[6:0];
- // assign HEX1       = io_hex1[6:0];
- // assign HEX2       = io_hex2[6:0];
- // assign HEX3       = io_hex3[6:0];
- // assign HEX4       = io_hex4[6:0];
- // assign HEX5       = io_hex5[6:0];
- // assign HEX6       = io_hex6[6:0];
- // assign HEX7       = io_hex7[6:0];
-
- // assign LEDG[7:0]  =  io_ledg[7:0];
-  assign LEDR[17:0] =  io_ledr[17:0];
-
-//assign LCD_DATA   =  io_lcd[7:0];
- // assign LCD_RW     =  io_lcd[8];
-  //assign LCD_RS     =  io_lcd[9];
-//  assign LCD_EN     =  io_lcd[10];
-//  assign LCD_ON     =  io_lcd[31];
-
- // assign io_sw      = {{15{1'b0}},SW[16:0]};
-
+  // Instantiate single_cycle với ĐẦY ĐỦ port connections
   single_cycle singleCycle (
-    .i_io_sw   ({{15{1'b0}},SW[16:0]}  ),//
-    .o_io_lcd  (  ),//
-    .o_io_ledg (),//
-    .o_io_ledr (io_ledr ),//
-    .o_io_hex0 (HEX0 ),//
-    .o_io_hex1 (HEX1 ),
-    .o_io_hex2 (HEX2 ),
-    .o_io_hex3 (HEX3 ),
-    .o_io_hex4 (HEX4 ),
-    .o_io_hex5 (HEX5 ),
-    .o_io_hex6 (HEX6 ),//
-    .o_io_hex7 (HEX7 ),//
-    .o_pc_debug(),//
-    .i_clk     (CLOCK_50),//
-    .i_reset    (SW[17]  ),
-	 .o_insn_vld(LEDG[0])//
-	  //.SRAM_ADDR(SRAM_ADDR),
-	  //.SRAM_DQ(SRAM_DQ) ,
-	 // .SRAM_CE_N(SRAM_CE_N),
-	 // .SRAM_WE_N(SRAM_WE_N),
-	 // .SRAM_LB_N(SRAM_LB_N),
-	  //.SRAM_UB_N(SRAM_UB_N),
-	 // .SRAM_OE_N(SRAM_OE_N)
+    .i_io_sw   ({14'b0, SW[17:0]}),
+    .o_io_lcd  (io_lcd),
+    .o_io_ledg (io_ledg_full),
+    .o_io_ledr (io_ledr_full),
+    .o_io_hex0 (hex0_data),
+    .o_io_hex1 (hex1_data),
+    .o_io_hex2 (hex2_data),
+    .o_io_hex3 (hex3_data),
+    .o_io_hex4 (hex4_data),
+    .o_io_hex5 (hex5_data),
+    .o_io_hex6 (hex6_data),
+    .o_io_hex7 (hex7_data),
+    .o_pc_debug(pc_debug),
+    .i_clk     (CLOCK_50),
+    .i_reset   (SW[17]),
+    .o_insn_vld(LEDG[0])
   );
+
+  // Map outputs
+  assign LEDR = io_ledr_full[17:0];
+  assign LEDG[7:1] = io_ledg_full[7:1];
+  assign HEX0 = hex0_data;
+  assign HEX1 = hex1_data;
+  assign HEX2 = hex2_data;
+  assign HEX3 = hex3_data;
+  assign HEX4 = hex4_data;
+  assign HEX5 = hex5_data;
+  assign HEX6 = hex6_data;
+  assign HEX7 = hex7_data;
 
 endmodule : singlecycle_wrapper
