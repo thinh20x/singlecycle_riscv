@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps 
+`timescale 1ns / 1ps
 module alu (
     input  logic [31:0] i_op_a,
     input  logic [31:0] i_op_b,
@@ -16,13 +16,13 @@ module alu (
     localparam ALU_SLL  = 4'h7;
     localparam ALU_SRL  = 4'h8;
     localparam ALU_SRA  = 4'h9;
-    localparam ALU_LUI  = 4'hA; // o_alu_data = i_op_b = output off immgen block
+    localparam ALU_LUI  = 4'hA;//// o_alu_data =  i_op_b =output off immgen block---------------------------------------------
 
     // ===== Logic operations =====
     logic [31:0] res_xor, res_or, res_and;
     genvar gi;
     generate
-        for (gi = 0; gi < 32; gi = gi + 1) begin : gen_logic_ops
+        for (gi = 0; gi < 32; gi++) begin:hihi
             assign res_xor[gi] = (i_op_a[gi] & ~i_op_b[gi]) | (~i_op_a[gi] & i_op_b[gi]);
             assign res_or[gi]  = i_op_a[gi] | i_op_b[gi];
             assign res_and[gi] = i_op_a[gi] & i_op_b[gi];
@@ -44,17 +44,17 @@ module alu (
     end
 
     generate
-        for (gi = 0; gi < 32; gi = gi + 1) begin : gen_pg_bits
+        for (gi = 0; gi < 32; gi++) begin:hihihaha
             assign p[gi] = a[gi] ^ b[gi];
             assign g[gi] = a[gi] & b[gi];
         end
     endgenerate
 
     // --- Block Propagate/Generate ---
-    always_comb begin
+    always_comb begin : gen_blk_pg
         automatic integer blk;
         automatic integer base;
-        for (blk = 0; blk < 8; blk = blk + 1) begin
+        for (blk = 0; blk < 8; blk++) begin
             base = blk * 4;
             Pblk[blk] = p[base+3] & p[base+2] & p[base+1] & p[base];
             Gblk[blk] = g[base+3]
@@ -65,18 +65,18 @@ module alu (
     end
 
     // --- Block carry chain ---
-    always_comb begin
+    always_comb begin : gen_blk_carry
         automatic integer blk;
         carry_blk_in[0] = do_sub ? 1'b1 : 1'b0;
-        for (blk = 0; blk < 8; blk = blk + 1)
+        for (blk = 0; blk < 8; blk++)
             carry_blk_in[blk+1] = Gblk[blk] | (Pblk[blk] & carry_blk_in[blk]);
     end
 
     // --- Bit-level carry ---
-    always_comb begin
+    always_comb begin : gen_bit_carry
         automatic integer blk, base;
         automatic logic c0;
-        for (blk = 0; blk < 8; blk = blk + 1) begin
+        for (blk = 0; blk < 8; blk++) begin
             base = blk * 4;
             c0 = carry_blk_in[blk];
             carry[base+0] = c0;
@@ -92,7 +92,7 @@ module alu (
 
     always_comb begin
         automatic integer i;
-        for (i = 0; i < 32; i = i + 1)
+        for (i = 0; i < 32; i++)
             sum_bits[i] = p[i] ^ carry[i];
     end
 
@@ -118,7 +118,7 @@ module alu (
     logic [4:0] shamt;
     assign shamt = i_op_b[4:0];
 
-    always_comb begin
+    always_comb begin : shift_left
         automatic logic [31:0] tmp;
         tmp = i_op_a;
         if (shamt[0]) tmp = {tmp[30:0], 1'b0};
@@ -129,7 +129,7 @@ module alu (
         res_sll = tmp;
     end
 
-    always_comb begin
+    always_comb begin : shift_right_logical
         automatic logic [31:0] tmp;
         tmp = i_op_a;
         if (shamt[0]) tmp = {1'b0, tmp[31:1]};
@@ -140,7 +140,7 @@ module alu (
         res_srl = tmp;
     end
 
-    always_comb begin
+    always_comb begin : shift_right_arithmetic
         automatic logic [31:0] tmp;
         automatic logic signbit;
         tmp = i_op_a;
@@ -166,7 +166,7 @@ module alu (
             ALU_SLL:  o_alu_data = res_sll;
             ALU_SRL:  o_alu_data = res_srl;
             ALU_SRA:  o_alu_data = res_sra;
-            ALU_LUI:  o_alu_data = i_op_b; // with i_op_b = output off immgen
+            ALU_LUI:  o_alu_data = i_op_b;// with i_op_b =output off immgen ---------------------------------------------
             default:  o_alu_data = 32'b0;
         endcase
     end

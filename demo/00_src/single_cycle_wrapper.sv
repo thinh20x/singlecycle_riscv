@@ -1,0 +1,76 @@
+
+
+module single_cycle_wrapper (
+  input  logic [17:0] SW,
+  input  logic        CLOCK_50,
+  output logic [17:0] LEDR,
+  output logic [8:0]  LEDG,
+  output logic [6:0]  HEX0, HEX1, HEX2, HEX3,
+  output logic [6:0]  HEX4, HEX5, HEX6, HEX7,
+  	 output logic [7:0]       LCD_DATA,
+    output logic             LCD_RW  ,
+    output logic             LCD_RS  ,
+    output logic             LCD_EN  ,
+    output logic             LCD_ON  
+    
+);
+ assign LEDR[17] = ~SW[17];
+
+  logic [31:0]       io_sw  ;
+  logic [31:0]       io_lcd ;
+  logic [31:0]       io_ledg;
+  logic [31:0]       io_ledr;
+  logic [31:0]       io_hex0;
+  logic [31:0]       io_hex1;
+  logic [31:0]       io_hex2;
+  logic [31:0]       io_hex3;
+  logic [31:0]       io_hex4;
+  logic [31:0]       io_hex5;
+  logic [31:0]       io_hex6;
+  logic [31:0]       io_hex7;
+   logic [31:0]       pc_debug;
+
+  assign LEDG[8] = |io_lcd[28:10] || |io_hex0[31:7] || |io_hex1[31:7] || |io_hex2[31:7]
+                           || |io_hex3[31:7] || |io_hex4[31:7] || |io_hex5[31:7]
+                           || |io_hex6[31:7] || |io_hex7[31:7] ||  io_ledg[31:8] | io_ledr[31:17];
+  // Khai báo tất cả signals cần thiết
+  assign HEX0       = io_hex0[6:0];
+  assign HEX1       = io_hex1[6:0];
+  assign HEX2       = io_hex2[6:0];
+  assign HEX3       = io_hex3[6:0];
+  assign HEX4       = io_hex4[6:0];
+  assign HEX5       = io_hex5[6:0];
+  assign HEX6       = io_hex6[6:0];
+  assign HEX7       = io_hex7[6:0];
+
+  assign LEDG[7:0]  =  io_ledg[7:0];
+  assign LEDR[16:0] =  io_ledr[16:0];
+   assign LCD_DATA   =  io_lcd[7:0];
+  assign LCD_RW     =  io_lcd[8];
+  assign LCD_RS     =  io_lcd[9];
+  assign LCD_EN     =  io_lcd[10];
+  assign LCD_ON     =  io_lcd[31];
+assign io_sw      = {{15{1'b0}},SW[16:0]};
+  // Instantiate single_cycle với ĐẦY ĐỦ port connections
+  single_cycle singleCycle (
+    .i_io_sw   (io_sw),
+    .o_io_lcd  (io_lcd),
+    .o_io_ledg (io_ledg),
+    .o_io_ledr (io_ledr),
+    .o_io_hex0 (io_hex0),
+    .o_io_hex1 (io_hex1),
+    .o_io_hex2 (io_hex2),
+    .o_io_hex3 (io_hex3),
+    .o_io_hex4 (io_hex4),
+    .o_io_hex5 (io_hex5),
+    .o_io_hex6 (io_hex6),
+    .o_io_hex7 (io_hex7),
+    .o_pc_debug(pc_debug),
+    .i_clk     (CLOCK_50),
+    .i_reset   (SW[17]),
+    .o_insn_vld()
+  );
+
+
+
+endmodule : single_cycle_wrapper

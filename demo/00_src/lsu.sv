@@ -5,8 +5,8 @@
 /* verilator lint_off SYNCASYNCNET */
 /* verilator lint_off MULTIDRIVEN */
 
-`define MEMFILE "../02_test/hex2bcd.mem"
-`define MEMSIZE 16384
+`define MEMFILE "../02_test/isa_4b.hex"
+`define MEMSIZE 65536
 `define ADDRBIT 16
 
 module lsu (
@@ -36,12 +36,11 @@ module lsu (
 );
 
     // Memory declaration (2KiB)
-    reg [31:0] d_mem [`MEMSIZE/4-1:0]; // 16KiB flash+ram
+    reg [31:0] d_mem [`MEMSIZE/4-1:0]; // 2KiB
 
-    // Map 0000_0000 - 0000_7FFB Flash
+    // Map 0000 - 7FFF Flash
     // Map 8000 - 8FFF Sram
 
-    //  THANH GHI Äá»†M (BUFFER) //
     reg [31:0] sw_buffer;
     reg [31:0] io_buffer[15:0];
     genvar i;
@@ -86,14 +85,13 @@ endgenerate
         $readmemh(`MEMFILE, d_mem);
     end
 
-    /// imem máº¡ch tá»• há»£p 
+    /// imem
     reg [`ADDRBIT-3:0] pc_addr;
     assign o_instr = d_mem[pc_addr];
     always @(i_pc) begin
-        pc_addr <= {1'b0, i_pc[`ADDRBIT-2:2]};//---------------------------8KB intruction memory~2k instruction
+        pc_addr <= {1'b0, i_pc[`ADDRBIT-2:2]};
     end
-    /////cáº¡nh lÃªn (posedge): CPU xuáº¥t dá»¯ liá»‡u má»›i. Cáº¡nh xuá»‘ng (negedge): LSU láº¥y dá»¯ liá»‡u tá»« CPU vÃ  lÆ°u vÃ o buffer.
-   // Ä‘áº£m báº£o ráº±ng khi Ä‘áº¿n cáº¡nh lÃªn káº¿ tiáº¿p, dá»¯ liá»‡u Ä‘Ã£ á»•n Ä‘á»‹nh.
+    /////
 
     always @(negedge i_clk) begin
         i_lsu_wren_buffer <= i_lsu_wren;
@@ -108,16 +106,15 @@ endgenerate
         if (i_lsu_wren_buffer) begin
             // Memory-mapped I/O handling
             case (i_lsu_addr_buffer[31:16])
-                16'h1000: begin// truy cap memory-mapped I/O cho led, hex, lcd
-                    if (!i_lsu_op[1]) io_buffer[i_lsu_addr_buffer[15:12]] <= i_st_data_buffer;// ghi word vao ngoáº¡i vi led sw
+                16'h1000: begin
+                    if (!i_lsu_op[1]) io_buffer[i_lsu_addr_buffer[15:12]] <= i_st_data_buffer;
 
-                    else if (i_lsu_op[1] & ~i_lsu_op[0]) begin// ghi half word 
-                        if (!i_lsu_addr_buffer[1]) io_buffer[i_lsu_addr_buffer[15:12]][15:0] <= i_st_data_buffer[15:0];// lower half
-                        // Truy cáº­p 16 bit tháº¥p (bits [15:0]) cá»§a pháº§n tá»­ io_buffer thá»© i_lsu_addr_buffer[15:12].â€
-                        else io_buffer[i_lsu_addr_buffer[15:12]][31:16] <= i_st_data_buffer[15:0];// upper half
+                    else if (i_lsu_op[1] & ~i_lsu_op[0]) begin
+                        if (!i_lsu_addr_buffer[1]) io_buffer[i_lsu_addr_buffer[15:12]][15:0] <= i_st_data_buffer[15:0];
+                        else io_buffer[i_lsu_addr_buffer[15:12]][31:16] <= i_st_data_buffer[15:0];
                     end
 
-                    else if (i_lsu_op[1] & i_lsu_op[0]) begin// ghi byte 
+                    else if (i_lsu_op[1] & i_lsu_op[0]) begin
                         case (i_lsu_addr_buffer[1:0])
                             2'b00: io_buffer[i_lsu_addr_buffer[15:12]][7:0] <= i_st_data_buffer[7:0];
                             2'b01: io_buffer[i_lsu_addr_buffer[15:12]][15:8] <= i_st_data_buffer[7:0];
@@ -127,14 +124,14 @@ endgenerate
                     end
                 end
 
-                // data Memory access
+                // Memory access
                 16'h0000: begin
-                    if (!i_lsu_op[1]) begin// ghi word
-                        d_mem[{1'b1, i_lsu_addr_buffer[`ADDRBIT-2:2]}] <= i_st_data_buffer;//  ghi word vao data memory
+                    if (!i_lsu_op[1]) begin
+                        d_mem[{1'b1, i_lsu_addr_buffer[`ADDRBIT-2:2]}] <= i_st_data_buffer;
                     end
-                    else if (i_lsu_op[1] & ~i_lsu_op[0]) begin// ghi half word
-                        if (!i_lsu_addr_buffer[1]) d_mem[{1'b1, i_lsu_addr_buffer[`ADDRBIT-2:2]}][15:0] <= i_st_data_buffer[15:0];//    lower half
-                        else d_mem[{1'b1, i_lsu_addr_buffer[`ADDRBIT-2:2]}][31:16] <= i_st_data_buffer[15:0];//    upper half
+                    else if (i_lsu_op[1] & ~i_lsu_op[0]) begin
+                        if (!i_lsu_addr_buffer[1]) d_mem[{1'b1, i_lsu_addr_buffer[`ADDRBIT-2:2]}][15:0] <= i_st_data_buffer[15:0];
+                        else d_mem[{1'b1, i_lsu_addr_buffer[`ADDRBIT-2:2]}][31:16] <= i_st_data_buffer[15:0];
                         end
                     else if (i_lsu_op[1] & i_lsu_op[0]) begin
                         case (i_lsu_addr_buffer[1:0])
@@ -153,15 +150,15 @@ endgenerate
     end
 
     always @(i_lsu_addr, i_lsu_op, i_ld_un) begin
-        if (!i_reset) begin////-------------------------8/11/2025 reset high to reset low
+        if (i_reset) begin
             // Reset outputs
             o_ld_data <= 32'b0;
         end 
-        // Memory-mapped I/O handling with read operations
+        // Memory-mapped I/O handling
         case (i_lsu_addr[31:16])
             16'h1000: begin
                 if (!i_lsu_op[1]) begin 
-                    o_ld_data <= io_buffer[i_lsu_addr[15:12]];// doc word tu ngoai vi led sw
+                    o_ld_data <= io_buffer[i_lsu_addr[15:12]];
                 end
                 else if (i_lsu_op[1] & ~i_lsu_op[0]) begin
                     if (!i_lsu_addr[1]) begin
