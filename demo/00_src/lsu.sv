@@ -149,11 +149,11 @@ endgenerate
         end
     end
 
-    always @(i_lsu_addr, i_lsu_op, i_ld_un) begin
-        if (i_reset) begin
+    always @(*) begin//read operation ----------------10/11/2025
+        
             // Reset outputs
-            o_ld_data <= 32'b0;
-        end 
+            o_ld_data = 32'b0;////////////10/11/2025
+        
         // Memory-mapped I/O handling
         case (i_lsu_addr[31:16])
             16'h1000: begin
@@ -268,7 +268,7 @@ endgenerate
             end
             
             // Reserved
-            default: ;
+            default:o_ld_data = 32'b0; // Explicit default ;//10/11/2025
         endcase
     end
 

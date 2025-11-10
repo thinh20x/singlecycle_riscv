@@ -45,7 +45,7 @@ module control_unit(
             7'b0110011 : imm_sel_temp = 4'd5; // R-type
             7'b0000011 : imm_sel_temp = 4'd6; // I2-type
             7'b1100111 : imm_sel_temp = 4'd7; // I3-type
-            default: imm_sel_temp = 4'd8;///in valid opcode 10/11/2025
+            default: imm_sel_temp = imm_sel_temp;
         endcase
 
         if (imm_sel_temp == 4'd5) begin // R-type
@@ -71,7 +71,6 @@ module control_unit(
                 128 : o_alu_op = 4'b0111; // sll
                 640 : o_alu_op = 4'b1000; // srl
                 672 : o_alu_op = 4'b1001; // sra
-					 default : o_alu_op = 4'b0000; // ✅ ADDED: Default to ADD 10/11/2025
             endcase
         end
         else if (imm_sel_temp == 4'd0) begin // I1-type=======================
@@ -90,7 +89,6 @@ module control_unit(
                     128 : o_alu_op = 4'b0111; // sll I*
                     640 : o_alu_op = 4'b1000; // srl
                     672 : o_alu_op = 4'b1001; // sra I*
-						  default : o_alu_op = 4'b0111; // ✅ ADDED: Default to SLLI 10/11/2025
                 endcase
             end else begin
                 o_imm_sel = 0;
@@ -101,7 +99,6 @@ module control_unit(
                     4 : o_alu_op = 4'b0100; // xor
                     6 : o_alu_op = 4'b0101; // or
                     7 : o_alu_op = 4'b0110; // and
-						  default : o_alu_op = 4'b0000; // Default to ADDI 10/11/2025
                 endcase
             end//-----------------------------------
         end//======================================
@@ -192,10 +189,7 @@ module control_unit(
                     o_lsu_op = 2'b00;  
                     o_ld_un  = 1'b1; 
                     end
-					default : begin // ✅ ADDED: Default to SW
-                    o_lsu_op = 2'b00;  
-                    o_ld_un  = 1'b1;
-               end 
+                
             endcase//------------------------------------------------------------------------------
         end
         else if (imm_sel_temp == 4'd2) begin // B-type
@@ -227,10 +221,6 @@ module control_unit(
                     o_pc_sel = (i_br_less) ? 1 : 0;
                 end
                 1 : o_pc_sel = (i_br_equal) ? 0 : 1; // bne
-					 default : begin
-					 o_pc_sel = 0; // ✅ ADDED: Default no branch 10/11/2025
-					 o_br_un = 0;
-					 end
             endcase
         end
         else if (imm_sel_temp == 4'd3) begin // J-type
@@ -255,15 +245,7 @@ module control_unit(
             case(i_instr[6:0])
                 7'b0010111 : o_alu_op = 4'd0; // auipc
                 7'b0110111 : o_alu_op = 4'd10; // lui+++++++++++++++++++++
-					 default    : o_alu_op = 4'd0;  // Default to AUIPC
             endcase
-        end
-		  // ============================================
-        // INVALID INSTRUCTION (imm_sel_temp == 4'd8)
-        // ============================================
-        else begin
-            // All outputs already set to default values
-            o_insn_vld = 0;  // Mark as invalid
         end
     end
 endmodule
