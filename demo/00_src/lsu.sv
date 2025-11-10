@@ -5,9 +5,9 @@
 /* verilator lint_off SYNCASYNCNET */
 /* verilator lint_off MULTIDRIVEN */
 
-`define MEMFILE "../02_test/isa_4b.hex"
-`define MEMSIZE 65536
-`define ADDRBIT 16
+`define MEMFILE "../02_test/hex2bcd.hex"
+`define MEMSIZE 2048
+`define ADDRBIT 11
 
 module lsu (
     input wire i_clk,          // Global clock
